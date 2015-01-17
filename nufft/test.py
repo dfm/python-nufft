@@ -2,10 +2,10 @@
 
 from __future__ import division, print_function
 
-__all__ = []
+__all__ = ["test_type_3"]
 
 import numpy as np
-from .nufft import nufft
+from .nufft import nufft3
 
 
 def _type_3(eps=1e-10):
@@ -18,8 +18,8 @@ def _type_3(eps=1e-10):
     y.real = np.sin(np.pi * j / nj)
     y.imag = np.cos(np.pi * j / nj)
     f = 48 * np.cos((np.arange(ms) + 1) * np.pi / ms)
-    p1 = nufft(x, y, f, eps=eps)
-    p2 = nufft(x, y, f, direct=True)
+    p1 = nufft3(x, y, f, eps=eps)
+    p2 = nufft3(x, y, f, direct=True)
 
     err = np.sqrt(np.sum((p1 - p2) ** 2) / np.sum(p1**2))
     assert err < eps
