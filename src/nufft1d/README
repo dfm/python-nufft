@@ -1,0 +1,35 @@
+This directory contains Fortran code for the 1D NUFFT.
+
+dirft1d.f contains direct evaluation schemes for verification/testing.
+
+nufft1df90.f contains NUFFT routines of types 1,2,3 with dynamic F90 
+workspace allocation.
+
+nufft1df77.f contains NUFFT routines of types 1,2,3 with static F77 
+workspace allocation in the calling (driver) routine.
+
+next235.f contains a utility routine that finds a highly composite 
+integer greater than a given number. 
+
+dfftpack.f contains a double precision FFT package from Netlib.
+
+nufft1d_demof77.f contains a sample driver routine for the F77
+versions of the codes. 
+
+nufft1d_demof90.f contains the analogous driver for the F90
+versions of the codes.
+
+------------------------------------------------------------------
+Simply compile 
+
+nufft1d_demof90.f nufft1df90.f dirft1d.f dfftpack.f next235.f
+
+or
+
+nufft1d_demof77.f nufft1df77.f dirft1d.f dfftpack.f next235.f
+
+
+Release notes:
+c
+c  NUFFT 1.2 : Jan 20, 2009.
+c              First external release.
