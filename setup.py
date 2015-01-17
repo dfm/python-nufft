@@ -42,9 +42,8 @@ setup(
     packages=["nufft"],
     ext_modules=extensions,
     description="non-uniform FFTs",
-    # long_description=open("README.rst").read(),
-    package_data={"": ["README.rst", "LICENSE", ]},
-    # "include/*.h", "hodlr/header/*.hpp", ]},
+    long_description=open("README.rst").read(),
+    package_data={"": ["README.rst", "LICENSE"]},
     include_package_data=True,
     classifiers=[
         # "Development Status :: 5 - Production/Stable",
