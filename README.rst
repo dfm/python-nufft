@@ -5,8 +5,9 @@ implemented but it's way faster than Lomb-Scargle!
 Usage
 -----
 
-There is only one function: ``nufft``. Assuming that you have a time series in
-``t`` and ``y`` and you want to evaluate it at (angular) frequencies ``f``:
+To install, run ``python setup.py install``. Then, there is only one function:
+``nufft``. Assuming that you have a time series in ``t`` and ``y`` and you
+want to evaluate it at (angular) frequencies ``f``:
 
 .. code-block:: python
 
