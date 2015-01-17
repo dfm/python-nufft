@@ -1,19 +1,10 @@
 cc Copyright (C) 2004-2009: Leslie Greengard and June-Yub Lee 
 cc Contact: greengard@cims.nyu.edu
 cc 
-cc This program is free software; you can redistribute it and/or modify 
-cc it under the terms of the GNU General Public License as published by 
-cc the Free Software Foundation; either version 2 of the License, or 
-cc (at your option) any later version.  This program is distributed in 
-cc the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
-cc even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
-cc PARTICULAR PURPOSE.  See the GNU General Public License for more 
-cc details. You should have received a copy of the GNU General Public 
-cc License along with this program; 
-cc if not, see <http://www.gnu.org/licenses/>.
-cc
+cc This software is being released under a FreeBSD license
+cc (see license.txt in this directory). 
 c
-c  NUFFT 1.2 release notes:
+c  NUFFT 1.3 release notes:
 c
 c  These codes are asymptotically fast (O(N log N)), but not optimized.
 c
@@ -25,7 +16,7 @@ c
 c  3) We do not block structure the code so that irregularly placed points
 c  are interpolated (gridded) in a cache-aware fashion.
 c
-c  4) We use the Netlib FFT library (www.netlib.org) 
+c  4) We use dfftpack.f from Netlib for FFT (http://www.netlib.org) 
 c     rather than the state of the art FFTW package (www.fftw.org).
 c
 c  Different applications have different needs, and we have chosen
@@ -37,9 +28,9 @@ c**********************************************************************
       integer ier,iflag,istart,iw1,iwsav
       integer j,jb1,jb1u,jb1d,k1,lused,lw,ms,next235,nf1,nj,nspread
       real*8 cross,cross1,diff1,eps,hx,pi,rat,r2lamb,t1,tau
-      real*8 xc(-47:47),xj(nj)
+      real*8 xc(-147:147),xj(nj)
       real*8 fw(0:lw-1)
-      parameter (pi=3.141592653589793d0)
+      parameter (pi=3.141592653589793238462643383279502884197d0)
       complex*16 cj(nj),fk(-ms/2:(ms-1)/2),zz,ccj
 c ----------------------------------------------------------------------
 c     if (iflag .ge. 0) then
@@ -73,7 +64,8 @@ c            on interval [-pi,pi].
 c
 c     cj     strengths of sources (complex *16)
 c     iflag  determines sign of FFT (see above)
-c     eps    precision request  (between 1.0d-13 and 1.0d-1)
+c     eps    precision request  (between 1.0d-33 and 1.0d-1)
+c               recomended value is 1d-15 for double precision calculations
 c     ms     number of Fourier modes computed (-ms/2 to (ms-1)/2 )
 c
 c     OUTPUT:
@@ -83,6 +75,7 @@ c     ier    error return code
 c   
 c            ier = 0  => normal execution.
 c            ier = 1  => precision eps requested is out of range.
+c            ier = 2  => insufficient workspace
 c
 c     The type 1 NUFFT proceeds in three steps (see [GL]).
 c
@@ -155,7 +148,7 @@ c     nspread is number of neighbors to which Gaussian gridding is
 c     carried out.
 c -------------------------------
       ier = 0
-      if ((eps.lt.1d-13).or.(eps.gt.1d-1)) then
+      if ((eps.lt.1d-33).or.(eps.gt.1d-1)) then
          ier = 1
          return
       endif
@@ -304,9 +297,9 @@ c
       integer ier,iflag,iw1,iwsav,j,jb1,jb1u,jb1d,k1,lused,lw
       integer ms,next235,nf1,nj,nspread,nw
       real*8 cross,cross1,diff1,eps,hx,pi,rat,r2lamb,t1
-      real*8 xj(nj),xc(-47:47)
+      real*8 xj(nj),xc(-147:147)
       real*8 fw(0:lw-1)
-      parameter (pi=3.141592653589793d0)
+      parameter (pi=3.141592653589793238462643383279502884197d0)
       complex*16 cj(nj), fk(-ms/2:(ms-1)/2)
       complex*16 zz
 c ----------------------------------------------------------------------
@@ -328,7 +321,8 @@ c
 c     nj     number of output values   (integer)
 c     xj     location of output values (real *8 array)
 c     iflag  determines sign of FFT (see above)
-c     eps    precision request  (between 1.0d-13 and 1.0d-1)
+c     eps    precision request  (between 1.0d-33 and 1.0d-1)
+c               recomended value is 1d-15 for double precision calculations
 c     ms     number of Fourier modes given  [ -ms/2: (ms-1)/2 ]
 c     fk     Fourier coefficient values (complex *16 array)
 c
@@ -360,7 +354,7 @@ c     nspread is number of neighbors to which Gaussian gridding is
 c     carried out.
 c     -------------------------------
       ier = 0
-      if ((eps.lt.1d-13).or.(eps.gt.1d-1)) then
+      if ((eps.lt.1d-33).or.(eps.gt.1d-1)) then
          ier = 1
          return
       endif
@@ -380,7 +374,7 @@ c     It is more convenient to define r2lamb = rat*rat*lambda
 c
 c     -------------------------------
       ier = 0
-      if ((eps.lt.1d-13).or.(eps.gt.1d-1)) then
+      if ((eps.lt.1d-33).or.(eps.gt.1d-1)) then
          ier = 1
          return
       endif
@@ -515,9 +509,9 @@ c
       integer lused,lw,next235,nf1,nj,nk,nspread
       real*8 ang,cross,cross1,diff1,eps,hx,hs,rat,pi,r2lamb1
       real*8 sm,sb,t1,t2,xm,xb
-      real*8 xc(-47:47), xj(nj), sk(nk)
+      real*8 xc(-147:147), xj(nj), sk(nk)
       real*8 fw(0:lw-1)
-      parameter (pi=3.141592653589793d0)
+      parameter (pi=3.141592653589793238462643383279502884197d0)
       complex*16 cj(nj), fk(nk), zz, cs
 c
 c ----------------------------------------------------------------------
@@ -539,7 +533,8 @@ c     nj     number of sources   (integer)
 c     xj     location of sources (double array)
 c     cj     strengths of sources (double complex array)
 c     iflag  determines sign of FFT (see above)
-c     eps    precision request  (between 1.0d-14 and 1.0d-1)
+c     eps    precision request  (between 1.0d-33 and 1.0d-1)
+c               recomended value is 1d-15 for double precision calculations
 c     nk     number of (noninteger) Fourier modes computed
 c     sk     k-values (locations) of desired Fourier modes
 c
@@ -577,7 +572,7 @@ c        to create F(s_k)  (in notation of [LG])
 c
 c***********************************************************************
       ier = 0
-      if ((eps.lt.1d-13).or.(eps.gt.1d-1)) then
+      if ((eps.lt.1d-33).or.(eps.gt.1d-1)) then
          ier = 1
          return
       endif

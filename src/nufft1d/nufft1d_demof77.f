@@ -1,16 +1,8 @@
 cc Copyright (C) 2004-2009: Leslie Greengard and June-Yub Lee 
 cc Contact: greengard@cims.nyu.edu
 cc 
-cc This program is free software; you can redistribute it and/or modify 
-cc it under the terms of the GNU General Public License as published by 
-cc the Free Software Foundation; either version 2 of the License, or 
-cc (at your option) any later version.  This program is distributed in 
-cc the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
-cc even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
-cc PARTICULAR PURPOSE.  See the GNU General Public License for more 
-cc details. You should have received a copy of the GNU General Public 
-cc License along with this program; 
-cc if not, see <http://www.gnu.org/licenses/>.
+cc This software is being released under a FreeBSD license
+cc (see license.txt in this directory). 
 c
       program testfft
       implicit none
@@ -23,7 +15,7 @@ c
       real*8 xj(mx), sk(mx)
       real*8 err,eps,pi
       real*8 fw(0:lw-1)
-      parameter (pi=3.141592653589793d0)
+      parameter (pi=3.141592653589793238462643383279502884197d0)
       complex*16 cj(mx),cj0(mx),cj1(mx)
       complex*16 fk0(mx),fk1(mx)
 c
@@ -37,7 +29,8 @@ c     --------------------------------------------------
          xj(j) = pi * dcos(-pi*j/nj)
          cj(j) = dcmplx( dsin(pi*j/nj), dcos(pi*j/nj))
       enddo
-      write(6,*) ( xj(j),j=1,nj)
+      write(6,1000) ( xj(j),j=1,nj)
+ 1000   format(6(1x,e12.5))
 c
 c     --------------------------------------------------
 c     start tests
@@ -45,10 +38,16 @@ c     --------------------------------------------------
 c
       iflag = 1
       print*,' Start 1D testing: ', ' nj =',nj, ' ms =',ms
-      do i = 1,3
+      do i = 1,4
          if (i.eq.1) eps=1d-4
          if (i.eq.2) eps=1d-8
          if (i.eq.3) eps=1d-12
+         if (i.eq.4) eps=1d-16
+c extended/quad precision tests
+         if (i.eq.5) eps=1d-20
+         if (i.eq.6) eps=1d-24
+         if (i.eq.7) eps=1d-28
+         if (i.eq.8) eps=1d-32
 	 print*,' '
   	 print*,' Requested precision eps =',eps
 	 print*,' '

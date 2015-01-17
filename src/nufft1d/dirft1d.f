@@ -1,17 +1,8 @@
 cc Copyright (C) 2004-2009: Leslie Greengard and June-Yub Lee 
 cc Contact: greengard@cims.nyu.edu
-cc 
-cc This program is free software; you can redistribute it and/or modify 
-cc it under the terms of the GNU General Public License as published by 
-cc the Free Software Foundation; either version 2 of the License, or 
-cc (at your option) any later version.  This program is distributed in 
-cc the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
-cc even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
-cc PARTICULAR PURPOSE.  See the GNU General Public License for more 
-cc details. You should have received a copy of the GNU General Public 
-cc License along with this program; 
-cc if not, see <http://www.gnu.org/licenses/>.
 cc
+cc This software is being released under a FreeBSD license
+cc (see license.txt in this directory). 
 c***********************************************************************
       subroutine dirft1d1(nj,xj,cj, iflag, ms,fk)
       implicit none
@@ -22,7 +13,7 @@ c ----------------------------------------------------------------------
 c     direct computation of nonuniform FFT
 c
 c                  1  nj
-c     fk(k1,k2) = -- SUM cj(j) exp(+/-i k1 xj(j)) 
+c     fk(k1)    = -- SUM cj(j) exp(+/-i k1 xj(j)) 
 c                 nj j=1
 c
 c     for -ms/2 <= k1 <= (ms-1)/2
