@@ -27,13 +27,13 @@ def _type_1(eps=1e-10):
     p2 = nufft1(x, y, len(f), direct=True)
     err = np.sqrt(np.sum(np.abs(p1 - p2) ** 2) / np.sum(np.abs(p1)**2))
     assert err < eps
-    assert len(nufft1freqs(len(f))) == len(p1)
+    assert len(nufft1freqs(len(f))) == len(p1), "even"
 
     p1 = nufft1(x, y, len(f) + 1, eps=eps)
     p2 = nufft1(x, y, len(f) + 1, direct=True)
     err = np.sqrt(np.sum(np.abs(p1 - p2) ** 2) / np.sum(np.abs(p1)**2))
     assert err < eps
-    assert len(nufft1freqs(len(f) + 1)) == len(p1)
+    assert len(nufft1freqs(len(f) + 1)) == len(p1), "odd"
 
 
 def test_type_1():
@@ -59,16 +59,15 @@ def _type_1_and_3(eps=1e-10):
 
     p1 = nufft1(x, y, len(f), eps=eps)
     f = nufft1freqs(len(f))
-    print(len(f), len(p1))
     p2 = nufft3(x, y, f, eps=eps)
     err = np.sqrt(np.sum(np.abs(p1 - p2) ** 2) / np.sum(np.abs(p1)**2))
-    assert err < eps
+    assert err < eps, "even"
 
     p1 = nufft1(x, y, len(f) + 1, eps=eps)
     f = nufft1freqs(len(f) + 1)
     p2 = nufft3(x, y, f, eps=eps)
     err = np.sqrt(np.sum(np.abs(p1 - p2) ** 2) / np.sum(np.abs(p1)**2))
-    assert err < eps
+    assert err < eps, "odd"
 
 
 def test_1_and_3():

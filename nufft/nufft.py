@@ -12,8 +12,7 @@ from ._nufft import (
 
 
 def nufft1freqs(ms, df=1.0):
-    n = ms + ms % 2
-    return df * np.arange(-n // 2 + 1, n // 2 + 1)
+    return df * (np.arange(-ms // 2, ms // 2) + ms % 2)
 
 
 def nufft1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
@@ -24,11 +23,10 @@ def nufft1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
         raise ValueError("Dimension mismatch")
 
     # Run the Fortran code.
-    n = ms + ms % 2
     if direct:
-        p = wrap_dirft1d1(x * df, y, iflag, n)
+        p = wrap_dirft1d1(x * df, y, iflag, ms)
     else:
-        p, flag = wrap_nufft1d1(x * df, y, iflag, eps, n)
+        p, flag = wrap_nufft1d1(x * df, y, iflag, eps, ms)
         # Check the output and return.
         if flag:
             raise RuntimeError("nufft1d3 failed with code {0}".format(flag))
