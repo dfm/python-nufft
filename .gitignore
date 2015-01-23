@@ -1,3 +1,4 @@
 build
 *.pyc
 *.so
+nufft/_*.c

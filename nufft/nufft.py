@@ -6,8 +6,8 @@ __all__ = ["nufft1freqs", "nufft1", "nufft3"]
 
 import numpy as np
 from ._nufft import (
-    wrap_dirft1d1, wrap_nufft1d1,
-    wrap_dirft1d3, wrap_nufft1d3,
+    dirft1d1, nufft1d1f90,
+    dirft1d3, nufft1d3f90,
 )
 
 
@@ -24,9 +24,9 @@ def nufft1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
 
     # Run the Fortran code.
     if direct:
-        p = wrap_dirft1d1(x * df, y, iflag, ms)
+        p = dirft1d1(x * df, y, iflag, ms)
     else:
-        p, flag = wrap_nufft1d1(x * df, y, iflag, eps, ms)
+        p, flag = nufft1d1f90(x * df, y, iflag, eps, ms)
         # Check the output and return.
         if flag:
             raise RuntimeError("nufft1d3 failed with code {0}".format(flag))
@@ -45,9 +45,9 @@ def nufft3(x, y, f, eps=1e-15, iflag=1, direct=False):
 
     # Run the Fortran code.
     if direct:
-        p = wrap_dirft1d3(x, y, iflag, f)
+        p = dirft1d3(x, y, iflag, f)
     else:
-        p, flag = wrap_nufft1d3(x, y, iflag, eps, f)
+        p, flag = nufft1d3f90(x, y, iflag, eps, f)
         # Check the output and return.
         if flag:
             raise RuntimeError("nufft1d3 failed with code {0}".format(flag))

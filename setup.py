@@ -29,7 +29,7 @@ if "tag" in sys.argv:
 # Set up the compiled extension.
 sources = list(map(os.path.join("src", "nufft1d", "{0}").format,
                    ["dfftpack.f", "dirft1d.f", "next235.f", "nufft1df90.f"]))
-sources += [os.path.join("nufft", "nufft.f90")]
+sources += [os.path.join("nufft", "nufft1d.pyf")]
 extensions = [Extension("nufft._nufft", sources=sources)]
 
 setup(
