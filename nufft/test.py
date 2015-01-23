@@ -69,6 +69,13 @@ def _type_1_and_3(eps=1e-10):
     err = np.sqrt(np.sum(np.abs(p1 - p2) ** 2) / np.sum(np.abs(p1)**2))
     assert err < eps, "odd"
 
+    df = 0.5 * (f[1] - f[0])
+    p1 = nufft1(x, y, len(f), eps=eps, df=df)
+    f = nufft1freqs(len(f), df=df)
+    p2 = nufft3(x, y, f, eps=eps)
+    err = np.sqrt(np.sum(np.abs(p1 - p2) ** 2) / np.sum(np.abs(p1)**2))
+    assert err < eps, "even"
+
 
 def test_1_and_3():
     for eps in [1e-2, 1e-5, 1e-10, 1e-12]:
