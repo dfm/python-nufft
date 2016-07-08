@@ -21,6 +21,15 @@ def _get_data():
     return x, y, f
 
 
+def _get_data_roundtrip():
+    ms = 512
+    nj = 200
+    x = np.sort(np.random.choice(np.linspace(-np.pi, np.pi, ms, endpoint=False), nj, replace=False))
+    y = np.random.randn(nj)
+    f = np.empty(ms)
+    return x, y, f
+
+
 def _type_1(eps=1e-10):
     x, y, f = _get_data()
     p2 = nufft1(x, y, len(f), direct=True)
@@ -42,9 +51,9 @@ def test_type_1():
 
 
 def _type_2(eps=1e-10):
-    x, y1, f = _get_data()
-    p = nufft1(x, y1, len(f), eps=eps)
-    y2 = nufft2(x, p, direct=True)
+    x, y, f = _get_data()
+    y2 = nufft2(x, f, direct=True)
+    y1 = nufft2(x, f, eps=eps)
     err = np.sqrt(np.sum(np.abs(y1 - y2) ** 2) / np.sum(np.abs(y1)**2))
     assert err < eps
 
@@ -52,6 +61,19 @@ def _type_2(eps=1e-10):
 def test_type_2():
     for eps in [1e-2, 1e-5, 1e-10, 1e-12]:
         _type_2(eps)
+
+
+def _type_1_2_roundtrip(eps=1e-10):
+    x, y1, f = _get_data_roundtrip()
+    p = nufft1(x, y1, len(f), iflag=-1, eps=eps)
+    y2 = len(x) / len(f) * nufft2(x, p, iflag=1, direct=True)
+    err = np.sqrt(np.sum(np.abs(y1 - y2) ** 2) / np.sum(np.abs(y1)**2))
+    assert err < eps
+
+
+def test_type_1_2_roundtrip():
+    for eps in [1e-2, 1e-5, 1e-10, 1e-12]:
+        _type_1_2_roundtrip(eps)
 
 
 def _type_3(eps=1e-10):
