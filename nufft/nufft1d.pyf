@@ -65,5 +65,29 @@ python module _nufft ! in
             complex*16 dimension(nk),intent(out),depend(nk) :: fk
         end subroutine dirft1d3
 
-    end interface
+        subroutine nufft2d1f90(nj,xj,yj,cj, iflag,eps, ms,mt,fk,ier) ! in :_nufft:src/nufft1d/nufft2df90.f
+            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj)
+            real*8 dimension(nj) :: xj
+            real*8 dimension(nj) :: yj
+            complex*16 dimension(nj),depend(nj) :: cj
+            integer :: iflag
+            real*8 :: eps
+            integer :: ms
+            integer :: mt
+            complex*16 dimension(ms, mt),intent(out),depend(ms, mt) :: fk
+            integer,intent(out) :: ier
+        end subroutine nufft2d1f90
+
+        subroutine dirft2d1(nj,xj,yj,cj, iflag, ms,mt,fk) ! in :_nufft:src/nufft1d/dirft2d.f
+            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj)
+            real*8 dimension(nj) :: xj
+            real*8 dimension(nj) :: yj
+            complex*16 dimension(nj),depend(nj) :: cj
+            integer :: iflag
+            integer :: ms
+            integer :: mt
+            complex*16 dimension(ms, mt),intent(out),depend(ms, mt) :: fk
+        end subroutine dirft2d1
+
+     end interface
 end python module _nufft

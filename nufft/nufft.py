@@ -2,21 +2,22 @@
 
 from __future__ import division, print_function
 
-__all__ = ["nufft1freqs", "nufft1", "nufft2", "nufft3"]
+__all__ = ["nufft1d1freqs", "nufft1d1", "nufft1d2", "nufft1d3", "nufft2d1"]
 
 import numpy as np
 from ._nufft import (
     dirft1d1, nufft1d1f90,
     dirft1d2, nufft1d2f90,
     dirft1d3, nufft1d3f90,
+    dirft2d1, nufft2d1f90,
 )
 
 
-def nufft1freqs(ms, df=1.0):
+def nufft1d1freqs(ms, df=1.0):
     return df * (np.arange(-ms // 2, ms // 2) + ms % 2)
 
 
-def nufft1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
+def nufft1d1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
     # Make sure that the data are properly formatted.
     x = np.ascontiguousarray(x, dtype=np.float64)
     y = np.ascontiguousarray(y, dtype=np.complex128)
@@ -34,7 +35,7 @@ def nufft1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
     return p
 
 
-def nufft2(x, p, df=1.0, eps=1e-15, iflag=1, direct=False):
+def nufft1d2(x, p, df=1.0, eps=1e-15, iflag=1, direct=False):
     # Make sure that the data are properly formatted.
     x = np.ascontiguousarray(x, dtype=np.float64)
     p = np.ascontiguousarray(p, dtype=np.complex128)
@@ -50,7 +51,7 @@ def nufft2(x, p, df=1.0, eps=1e-15, iflag=1, direct=False):
     return y
 
 
-def nufft3(x, y, f, eps=1e-15, iflag=1, direct=False):
+def nufft1d3(x, y, f, eps=1e-15, iflag=1, direct=False):
     # Make sure that the data are properly formatted.
     x = np.ascontiguousarray(x, dtype=np.float64)
     y = np.ascontiguousarray(y, dtype=np.complex128)
@@ -69,3 +70,22 @@ def nufft3(x, y, f, eps=1e-15, iflag=1, direct=False):
         if flag:
             raise RuntimeError("nufft1d3 failed with code {0}".format(flag))
     return p / len(x)
+
+
+def nufft2d1(x, y, z, ms, mt, df=1.0, eps=1e-15, iflag=1, direct=False):
+    # Make sure that the data are properly formatted.
+    x = np.ascontiguousarray(x, dtype=np.float64)
+    y = np.ascontiguousarray(x, dtype=np.float64)
+    z = np.ascontiguousarray(y, dtype=np.complex128)
+    if len(x) != len(y) or len(y) != len(z):
+        raise ValueError("Dimension mismatch")
+
+    # Run the Fortran code.
+    if direct:
+        p = dirft2d1(x * df, y * df, z, iflag, ms, mt)
+    else:
+        p, flag = nufft2d1f90(x * df, y * df, z, iflag, eps, ms, mt)
+        # Check the output and return.
+        if flag:
+            raise RuntimeError("nufft2d1 failed with code {0}".format(flag))
+    return p

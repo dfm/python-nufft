@@ -5,7 +5,7 @@ from __future__ import division, print_function
 __all__ = ["test_type_1", "test_type_2", "test_type_3", "test_1_and_3"]
 
 import numpy as np
-from .nufft import nufft1freqs, nufft1, nufft2, nufft3
+from .nufft import nufft1d1freqs, nufft1d1, nufft1d2, nufft1d3, nufft2d1
 
 
 def _get_data():
@@ -18,6 +18,21 @@ def _get_data():
     y.real = np.sin(np.pi * j / nj)
     y.imag = np.cos(np.pi * j / nj)
     f = 48 * np.cos((np.arange(ms) + 1) * np.pi / ms)
+    return x, y, f
+
+def _get_data_2d():
+    ms = 20
+    mt = 20
+    nj = 128
+    k1 = np.arange(-0.5 * nj, 0.5 * nj)
+    j = k1 + 0.5 * nj + 1
+    x = np.pi * np.cos(-np.pi * j / nj)
+    y = np.pi * np.sin(-np.pi * j / nj)
+    z = np.empty_like(x, dtype=np.complex128)
+    z.real = np.sin(np.pi * j / nj)
+    z.imag = np.cos(np.pi * j / nj)
+    ms_val, mt_val = np.meshgrid(np.arange(ms)/ms, np.arange(mt)/mt, sparse=True)
+    f = 48 * np.cos((ms_val + mt_val + 1) * np.pi)
     return x, y, f
 
 
