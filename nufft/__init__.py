@@ -9,5 +9,5 @@ except NameError:
 
 if not __NUFFT_SETUP__:
     __all__ = ["nufft1d1freqs", "nufft1d1", "nufft1d2", "nufft1d3",
-               "nufft2d1", "nufft2d2"]
-    from .nufft import nufft1d1freqs, nufft1d1, nufft1d2, nufft1d3, nufft2d1, nufft2d2
+               "nufft2d1", "nufft2d2", "nufft2d3"]
+    from .nufft import nufft1d1freqs, nufft1d1, nufft1d2, nufft1d3, nufft2d1, nufft2d2, nufft2d3

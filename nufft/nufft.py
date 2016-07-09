@@ -3,7 +3,7 @@
 from __future__ import division, print_function
 
 __all__ = ["nufft1d1freqs", "nufft1d1", "nufft1d2", "nufft1d3",
-           "nufft2d1", "nufft2d2"]
+           "nufft2d1", "nufft2d2", "nufft2d3"]
 
 import numpy as np
 from ._nufft import (
@@ -12,6 +12,7 @@ from ._nufft import (
     dirft1d3, nufft1d3f90,
     dirft2d1, nufft2d1f90,
     dirft2d2, nufft2d2f90,
+    dirft2d3, nufft2d3f90,
 )
 
 
@@ -98,6 +99,8 @@ def nufft2d2(x, y, p, df=1.0, eps=1e-15, iflag=1, direct=False):
     x = np.ascontiguousarray(x, dtype=np.float64)
     y = np.ascontiguousarray(y, dtype=np.float64)
     p = np.ascontiguousarray(p, dtype=np.complex128)
+    if len(x) != len(y):
+        raise ValueError("Dimension mismatch")
 
     # Run the Fortran code.
     if direct:
@@ -108,3 +111,28 @@ def nufft2d2(x, y, p, df=1.0, eps=1e-15, iflag=1, direct=False):
         if flag:
             raise RuntimeError("nufft2d2 failed with code {0}".format(flag))
     return z
+
+
+def nufft2d3(x, y, z, f, g, eps=1e-15, iflag=1, direct=False):
+    # Make sure that the data are properly formatted.
+    x = np.ascontiguousarray(x, dtype=np.float64)
+    y = np.ascontiguousarray(y, dtype=np.float64)
+    z = np.ascontiguousarray(z, dtype=np.complex128)
+    if len(x) != len(y) or len(y) != len(z):
+        raise ValueError("Dimension mismatch")
+
+    # Make sure that the frequencies are of the right type.
+    f = np.ascontiguousarray(f, dtype=np.float64)
+    g = np.ascontiguousarray(g, dtype=np.float64)
+    if len(f) != len(g):
+        raise ValueError("Dimension mismatch")
+
+    # Run the Fortran code.
+    if direct:
+        p = dirft2d3(x, y, z, iflag, f, g)
+    else:
+        p, flag = nufft2d3f90(x, y, z, iflag, eps, f, g)
+        # Check the output and return.
+        if flag:
+            raise RuntimeError("nufft2d3 failed with code {0}".format(flag))
+    return p / len(x)
