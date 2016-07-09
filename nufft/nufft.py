@@ -75,8 +75,8 @@ def nufft1d3(x, y, f, eps=1e-15, iflag=1, direct=False):
 def nufft2d1(x, y, z, ms, mt, df=1.0, eps=1e-15, iflag=1, direct=False):
     # Make sure that the data are properly formatted.
     x = np.ascontiguousarray(x, dtype=np.float64)
-    y = np.ascontiguousarray(x, dtype=np.float64)
-    z = np.ascontiguousarray(y, dtype=np.complex128)
+    y = np.ascontiguousarray(y, dtype=np.float64)
+    z = np.ascontiguousarray(z, dtype=np.complex128)
     if len(x) != len(y) or len(y) != len(z):
         raise ValueError("Dimension mismatch")
 
