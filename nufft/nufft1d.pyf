@@ -66,7 +66,7 @@ python module _nufft ! in
         end subroutine dirft1d3
 
         subroutine nufft2d1f90(nj,xj,yj,cj, iflag,eps, ms,mt,fk,ier) ! in :_nufft:src/nufft1d/nufft2df90.f
-            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj)
+            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
             real*8 dimension(nj) :: xj
             real*8 dimension(nj) :: yj
             complex*16 dimension(nj),depend(nj) :: cj
@@ -78,8 +78,21 @@ python module _nufft ! in
             integer,intent(out) :: ier
         end subroutine nufft2d1f90
 
+        subroutine nufft2d2f90(nj,xj,yj,cj, iflag,eps, ms,mt,fk,ier) ! in :_nufft:src/nufft1d/nufft2df90.f
+            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
+            real*8 dimension(nj) :: xj
+            real*8 dimension(nj) :: yj
+            complex*16 dimension(nj),intent(out),depend(nj) :: cj
+            integer :: iflag
+            real*8 :: eps
+            integer, optional,check(size(fk, 1)>=ms),depend(fk) :: ms=size(fk, 1)
+            integer, optional,check(size(fk, 2)>=ms),depend(fk) :: mt=size(fk, 2)
+            complex*16 dimension(ms, mt) :: fk
+            integer,intent(out) :: ier
+        end subroutine nufft2d2f90
+
         subroutine dirft2d1(nj,xj,yj,cj, iflag, ms,mt,fk) ! in :_nufft:src/nufft1d/dirft2d.f
-            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj)
+            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
             real*8 dimension(nj) :: xj
             real*8 dimension(nj) :: yj
             complex*16 dimension(nj),depend(nj) :: cj
@@ -88,6 +101,17 @@ python module _nufft ! in
             integer :: mt
             complex*16 dimension(ms, mt),intent(out),depend(ms, mt) :: fk
         end subroutine dirft2d1
+
+        subroutine dirft2d2(nj,xj,yj,cj, iflag, ms,mt,fk) ! in :_nufft:src/nufft1d/dirft2d.f
+            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
+            real*8 dimension(nj) :: xj
+            real*8 dimension(nj) :: yj
+            complex*16 dimension(nj),intent(out),depend(nj) :: cj
+            integer :: iflag
+            integer, optional,check(size(fk, 1)>=ms),depend(fk) :: ms=size(fk, 1)
+            integer, optional,check(size(fk, 2)>=mt),depend(fk) :: mt=size(fk, 2)
+            complex*16 dimension(ms, mt) :: fk
+        end subroutine dirft2d2
 
      end interface
 end python module _nufft

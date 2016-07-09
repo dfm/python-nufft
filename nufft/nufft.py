@@ -2,7 +2,8 @@
 
 from __future__ import division, print_function
 
-__all__ = ["nufft1d1freqs", "nufft1d1", "nufft1d2", "nufft1d3", "nufft2d1"]
+__all__ = ["nufft1d1freqs", "nufft1d1", "nufft1d2", "nufft1d3",
+           "nufft2d1", "nufft2d2"]
 
 import numpy as np
 from ._nufft import (
@@ -10,6 +11,7 @@ from ._nufft import (
     dirft1d2, nufft1d2f90,
     dirft1d3, nufft1d3f90,
     dirft2d1, nufft2d1f90,
+    dirft2d2, nufft2d2f90,
 )
 
 
@@ -89,3 +91,20 @@ def nufft2d1(x, y, z, ms, mt, df=1.0, eps=1e-15, iflag=1, direct=False):
         if flag:
             raise RuntimeError("nufft2d1 failed with code {0}".format(flag))
     return p
+
+
+def nufft2d2(x, y, p, df=1.0, eps=1e-15, iflag=1, direct=False):
+    # Make sure that the data are properly formatted.
+    x = np.ascontiguousarray(x, dtype=np.float64)
+    y = np.ascontiguousarray(y, dtype=np.float64)
+    p = np.ascontiguousarray(p, dtype=np.complex128)
+
+    # Run the Fortran code.
+    if direct:
+        z = dirft2d2(x * df, y * df, iflag, p)
+    else:
+        z, flag = nufft2d2f90(x * df, y * df, iflag, eps, p)
+        # Check the output and return.
+        if flag:
+            raise RuntimeError("nufft2d2 failed with code {0}".format(flag))
+    return z
