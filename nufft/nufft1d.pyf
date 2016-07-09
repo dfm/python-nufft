@@ -66,7 +66,7 @@ python module _nufft ! in
         end subroutine dirft1d3
 
         subroutine nufft2d1f90(nj,xj,yj,cj, iflag,eps, ms,mt,fk,ier) ! in :_nufft:src/nufft1d/nufft2df90.f
-            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
+            integer, optional,check(len(xj)>=nj && len(xj)==len(yj)),depend(xj,yj) :: nj=len(xj)
             real*8 dimension(nj) :: xj
             real*8 dimension(nj) :: yj
             complex*16 dimension(nj),depend(nj) :: cj
@@ -79,7 +79,7 @@ python module _nufft ! in
         end subroutine nufft2d1f90
 
         subroutine nufft2d2f90(nj,xj,yj,cj, iflag,eps, ms,mt,fk,ier) ! in :_nufft:src/nufft1d/nufft2df90.f
-            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
+            integer, optional,check(len(xj)>=nj && len(xj)==len(yj)),depend(xj, yj) :: nj=len(xj)
             real*8 dimension(nj) :: xj
             real*8 dimension(nj) :: yj
             complex*16 dimension(nj),intent(out),depend(nj) :: cj
@@ -92,7 +92,7 @@ python module _nufft ! in
         end subroutine nufft2d2f90
 
         subroutine dirft2d1(nj,xj,yj,cj, iflag, ms,mt,fk) ! in :_nufft:src/nufft1d/dirft2d.f
-            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
+            integer, optional,check(len(xj)>=nj && len(xj)==len(yj)),depend(xj, yj) :: nj=len(xj)
             real*8 dimension(nj) :: xj
             real*8 dimension(nj) :: yj
             complex*16 dimension(nj),depend(nj) :: cj
@@ -103,7 +103,7 @@ python module _nufft ! in
         end subroutine dirft2d1
 
         subroutine dirft2d2(nj,xj,yj,cj, iflag, ms,mt,fk) ! in :_nufft:src/nufft1d/dirft2d.f
-            integer, optional,check(len(xj)>=nj),depend(xj) :: nj=len(xj) ! TO-DO: Interact properly with both xj and yj
+            integer, optional,check(len(xj)>=nj && len(xj)==len(yj)),depend(xj, yj) :: nj=len(xj)
             real*8 dimension(nj) :: xj
             real*8 dimension(nj) :: yj
             complex*16 dimension(nj),intent(out),depend(nj) :: cj
