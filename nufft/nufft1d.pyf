@@ -86,7 +86,7 @@ python module _nufft ! in
             integer :: iflag
             real*8 :: eps
             integer, optional,check(size(fk, 1)>=ms),depend(fk) :: ms=size(fk, 1)
-            integer, optional,check(size(fk, 2)>=ms),depend(fk) :: mt=size(fk, 2)
+            integer, optional,check(size(fk, 2)>=mt),depend(fk) :: mt=size(fk, 2)
             complex*16 dimension(ms, mt) :: fk
             integer,intent(out) :: ier
         end subroutine nufft2d2f90
