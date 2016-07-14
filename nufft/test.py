@@ -5,7 +5,7 @@ from __future__ import division, print_function
 __all__ = ["test_type_1", "test_type_2", "test_type_3", "test_1_and_3"]
 
 import numpy as np
-from .nufft import nufft1d1freqs, nufft1d1, nufft1d2, nufft1d3, nufft2d1
+from .nufft import nufft1d1freqs, nufft1d1, nufft1d2, nufft1d3
 
 
 def _get_data():
