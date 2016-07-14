@@ -2,21 +2,25 @@
 
 from __future__ import division, print_function
 
-__all__ = ["nufft1freqs", "nufft1", "nufft2", "nufft3"]
+__all__ = ["nufft1d1freqs", "nufft1d1", "nufft1d2", "nufft1d3",
+           "nufft2d1", "nufft2d2", "nufft2d3"]
 
 import numpy as np
 from ._nufft import (
     dirft1d1, nufft1d1f90,
     dirft1d2, nufft1d2f90,
     dirft1d3, nufft1d3f90,
+    dirft2d1, nufft2d1f90,
+    dirft2d2, nufft2d2f90,
+    dirft2d3, nufft2d3f90,
 )
 
 
-def nufft1freqs(ms, df=1.0):
+def nufft1d1freqs(ms, df=1.0):
     return df * (np.arange(-ms // 2, ms // 2) + ms % 2)
 
 
-def nufft1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
+def nufft1d1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
     # Make sure that the data are properly formatted.
     x = np.ascontiguousarray(x, dtype=np.float64)
     y = np.ascontiguousarray(y, dtype=np.complex128)
@@ -34,7 +38,7 @@ def nufft1(x, y, ms, df=1.0, eps=1e-15, iflag=1, direct=False):
     return p
 
 
-def nufft2(x, p, df=1.0, eps=1e-15, iflag=1, direct=False):
+def nufft1d2(x, p, df=1.0, eps=1e-15, iflag=1, direct=False):
     # Make sure that the data are properly formatted.
     x = np.ascontiguousarray(x, dtype=np.float64)
     p = np.ascontiguousarray(p, dtype=np.complex128)
@@ -50,7 +54,7 @@ def nufft2(x, p, df=1.0, eps=1e-15, iflag=1, direct=False):
     return y
 
 
-def nufft3(x, y, f, eps=1e-15, iflag=1, direct=False):
+def nufft1d3(x, y, f, eps=1e-15, iflag=1, direct=False):
     # Make sure that the data are properly formatted.
     x = np.ascontiguousarray(x, dtype=np.float64)
     y = np.ascontiguousarray(y, dtype=np.complex128)
@@ -68,4 +72,67 @@ def nufft3(x, y, f, eps=1e-15, iflag=1, direct=False):
         # Check the output and return.
         if flag:
             raise RuntimeError("nufft1d3 failed with code {0}".format(flag))
+    return p / len(x)
+
+
+def nufft2d1(x, y, z, ms, mt, df=1.0, eps=1e-15, iflag=1, direct=False):
+    # Make sure that the data are properly formatted.
+    x = np.ascontiguousarray(x, dtype=np.float64)
+    y = np.ascontiguousarray(y, dtype=np.float64)
+    z = np.ascontiguousarray(z, dtype=np.complex128)
+    if len(x) != len(y) or len(y) != len(z):
+        raise ValueError("Dimension mismatch")
+
+    # Run the Fortran code.
+    if direct:
+        p = dirft2d1(x * df, y * df, z, iflag, ms, mt)
+    else:
+        p, flag = nufft2d1f90(x * df, y * df, z, iflag, eps, ms, mt)
+        # Check the output and return.
+        if flag:
+            raise RuntimeError("nufft2d1 failed with code {0}".format(flag))
+    return p
+
+
+def nufft2d2(x, y, p, df=1.0, eps=1e-15, iflag=1, direct=False):
+    # Make sure that the data are properly formatted.
+    x = np.ascontiguousarray(x, dtype=np.float64)
+    y = np.ascontiguousarray(y, dtype=np.float64)
+    p = np.ascontiguousarray(p, dtype=np.complex128)
+    if len(x) != len(y):
+        raise ValueError("Dimension mismatch")
+
+    # Run the Fortran code.
+    if direct:
+        z = dirft2d2(x * df, y * df, iflag, p)
+    else:
+        z, flag = nufft2d2f90(x * df, y * df, iflag, eps, p)
+        # Check the output and return.
+        if flag:
+            raise RuntimeError("nufft2d2 failed with code {0}".format(flag))
+    return z
+
+
+def nufft2d3(x, y, z, f, g, eps=1e-15, iflag=1, direct=False):
+    # Make sure that the data are properly formatted.
+    x = np.ascontiguousarray(x, dtype=np.float64)
+    y = np.ascontiguousarray(y, dtype=np.float64)
+    z = np.ascontiguousarray(z, dtype=np.complex128)
+    if len(x) != len(y) or len(y) != len(z):
+        raise ValueError("Dimension mismatch")
+
+    # Make sure that the frequencies are of the right type.
+    f = np.ascontiguousarray(f, dtype=np.float64)
+    g = np.ascontiguousarray(g, dtype=np.float64)
+    if len(f) != len(g):
+        raise ValueError("Dimension mismatch")
+
+    # Run the Fortran code.
+    if direct:
+        p = dirft2d3(x, y, z, iflag, f, g)
+    else:
+        p, flag = nufft2d3f90(x, y, z, iflag, eps, f, g)
+        # Check the output and return.
+        if flag:
+            raise RuntimeError("nufft2d3 failed with code {0}".format(flag))
     return p / len(x)

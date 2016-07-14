@@ -1,6 +1,6 @@
 Python bindings to a subset of the `NUFFT algorithm
-<http://www.cims.nyu.edu/cmcl/nufft/nufft.html>`_. Only the 1D case is
-implemented but it's way faster than Lomb-Scargle!
+<http://www.cims.nyu.edu/cmcl/nufft/nufft.html>`_. Only the 1D and 2D cases are
+implemented.
 
 Usage
 -----
@@ -21,7 +21,7 @@ You can specify your required precision using ``eps=1e-15``. The default is
 Authors and License
 -------------------
 
-Python bindings by Dan Foreman-Mackey but the code that actually does the work
+Python bindings by Dan Foreman-Mackey and Thomas Arildsen but the code that actually does the work
 is from the Greengard lab at NYU (see `the website
 <http://www.cims.nyu.edu/cmcl/nufft/nufft.html>`_). The Fortran code is BSD
 licensed and the Python bindings are MIT licensed.
