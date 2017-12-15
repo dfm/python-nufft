@@ -49,6 +49,8 @@ setup(
     description="non-uniform FFTs",
     long_description=open("README.rst").read(),
     package_data={"": ["README.rst", "LICENSE"]},
+    test_suite='tests',
+    tests_require=['nose'],
     include_package_data=True,
     classifiers=[
         # "Development Status :: 5 - Production/Stable",
