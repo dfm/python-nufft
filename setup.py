@@ -41,6 +41,10 @@ setup(
     url="https://github.com/dfm/python-nufft",
     license="MIT",
     packages=["nufft"],
+    install_requires=[
+        'numpy',
+        'sphinx_rtd_theme'
+    ],
     ext_modules=extensions,
     description="non-uniform FFTs",
     long_description=open("README.rst").read(),
