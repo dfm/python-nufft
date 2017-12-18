@@ -1,3 +1,12 @@
+Python-NUFFT
+============
+
+.. image:: https://travis-ci.org/marchdf/python-nufft.svg?branch=master
+    :target: https://travis-ci.org/marchdf/python-nufft
+
+.. image:: https://coveralls.io/repos/github/marchdf/python-nufft/badge.svg?branch=master
+	   :target: https://coveralls.io/github/marchdf/python-nufft?branch=master
+
 Python bindings to a subset of the `NUFFT algorithm
 <http://www.cims.nyu.edu/cmcl/nufft/nufft.html>`_. 1D, 2D, and 3D
 cases are implemented.

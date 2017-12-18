@@ -1,0 +1,29 @@
+language: python
+python:
+  - "2.7"
+  - "3.6"
+
+# command to install tools
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install gfortran
+
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install -r requirements-test.txt
+  - pip install coveralls
+  - python setup.py build_src build_ext --inplace
+
+# command to run the tests
+script:
+  - nosetests --with-coverage
+
+# command after a successful test
+after_success:
+  - coveralls
+  
+# branches to build
+branches:
+  only:
+    - master
