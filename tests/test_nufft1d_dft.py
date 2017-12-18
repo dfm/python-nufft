@@ -39,6 +39,8 @@ class NUFFT1DTestCase(unittest.TestCase):
         # Numpy baseline FFT
         self.f_numpy = np.fft.fft(self.c)
         self.c_numpy = np.fft.ifft(self.f_numpy)
+        self.fr_numpy = np.fft.rfft(self.c)
+        self.cr_numpy = np.fft.irfft(self.fr_numpy)
 
     def test_type1_dft(self):
         """Is the NUFFT type 1 DFT correct?"""
@@ -58,9 +60,9 @@ class NUFFT1DTestCase(unittest.TestCase):
                            0) * self.N
 
         self.assertTrue(_error(self.f_numpy, f_dir1) < self.eps,
-                        "NUFFT direct DFT (1) vs. NumPy IFFT: error too large")
+                        "NUFFT direct DFT (1) vs. NumPy FFT: error too large")
         self.assertTrue(_error(self.f_numpy, f_nufft1) < self.eps,
-                        "NUFFT direct DFT (1) vs. NumPy IFFT: error too large")
+                        "NUFFT direct DFT (1) vs. NumPy FFT: error too large")
 
     def test_type1_idft(self):
         """Is the NUFFT type 1 IDFT correct?"""
@@ -83,6 +85,55 @@ class NUFFT1DTestCase(unittest.TestCase):
                         "NUFFT direct IDFT (1) vs. NumPy IFFT: error too large")
         self.assertTrue(_error(self.c_numpy, c_nufft) < self.eps,
                         "NUFFT direct IDFT (1) vs. NumPy IFFT: error too large")
+
+    def test_type1_rdft(self):
+        """Is the NUFFT type 1 RDFT correct?"""
+        f_dir1 = np.roll(nufft1d1(self.x,
+                                  self.c,
+                                  self.N,
+                                  iflag=-1,
+                                  direct=True),
+                         -int(self.N / 2),
+                         0)[:int(self.N / 2) + 1] * self.N
+        f_nufft1 = np.roll(nufft1d1(self.x,
+                                    self.c,
+                                    self.N,
+                                    iflag=-1,
+                                    direct=False),
+                           -int(self.N / 2),
+                           0)[:int(self.N / 2) + 1] * self.N
+
+        self.assertTrue(_error(self.fr_numpy, f_dir1) < self.eps,
+                        "NUFFT direct RDFT (1) vs. NumPy IRFFT: error too large")
+        self.assertTrue(_error(self.fr_numpy, f_nufft1) < self.eps,
+                        "NUFFT RFFT (1) vs. NumPy IRFFT: error too large")
+
+    def test_type1_irdft(self):
+        """Is the NUFFT type 1 IRDFT correct?"""
+
+        # Trick to make it think it is seeing a full FFT
+        f = np.concatenate((self.fr_numpy,
+                            np.conj(self.fr_numpy[-2:0:-1])))
+
+        c_dir = np.roll(nufft1d1(self.x,
+                                 f,
+                                 self.N,
+                                 iflag=1,
+                                 direct=True),
+                        -int(self.N / 2),
+                        0)
+        c_nufft = np.roll(nufft1d1(self.x,
+                                   f,
+                                   self.N,
+                                   iflag=1,
+                                   direct=False),
+                          -int(self.N / 2),
+                          0)
+
+        self.assertTrue(_error(self.cr_numpy, c_dir) < self.eps,
+                        "NUFFT direct IRDFT (1) vs. NumPy IRFFT: error too large")
+        self.assertTrue(_error(self.cr_numpy, c_nufft) < self.eps,
+                        "NUFFT direct IRDFT (1) vs. NumPy IRFFT: error too large")
 
     def test_type2_dft(self):
         """Is the NUFFT type 2 DFT correct?"""
