@@ -68,7 +68,7 @@ class NUFFT1DTestCase(unittest.TestCase):
     def _type_3(self, eps=1e-10):
         p2 = nufft1d3(self.x, self.c, self.f, direct=True)
         p1 = nufft1d3(self.x, self.c, self.f, eps=eps)
-        self.assertTrue(_error(p1, p2),
+        self.assertTrue(_error(p1, p2) < eps,
                         "Type 3: Discrepancy between direct and fft function")
 
     def _type_1_2_roundtrip(self, eps=1e-10):
@@ -111,7 +111,7 @@ class NUFFT1DTestCase(unittest.TestCase):
 
     def test_type_2(self):
         """Is the 1D type 2 correct?"""
-        for eps in [1e-2, 1e-5, 1e-10, 1e-12]:
+        for eps in [1e-6, 1e-10, 1e-12]:
             self._type_2(eps)
 
     def test_type_3(self):

@@ -3,47 +3,7 @@
 from __future__ import division, print_function
 import unittest
 import numpy as np
-from nufft import nufft1d1freqs, nufft2d1, nufft2d2, nufft2d3
-
-
-def _get_data():
-    ms = 20
-    mt = 20
-    nj = 128
-    k1 = np.arange(-0.5 * nj, 0.5 * nj)
-    j = k1 + 0.5 * nj + 1
-    x = np.pi * np.cos(-np.pi * j / nj)
-    y = np.pi * np.sin(-np.pi * j / nj)
-    c = np.empty_like(x, dtype=np.complex128)
-    c.real = np.sin(np.pi * j / nj)
-    c.imag = np.cos(np.pi * j / nj)
-    ms_val, mt_val = np.meshgrid(np.arange(ms) / ms,
-                                 np.arange(mt) / mt,
-                                 sparse=True)
-    f = 48 * np.cos((ms_val + mt_val + 1) * np.pi)
-    g = 32 * np.sin((ms_val + mt_val + 1) * np.pi)
-    return x, y, c, f, g
-
-
-def _get_data_roundtrip():
-    ms = 512
-    mt = 512
-    nj = 200
-    x = np.sort(np.random.choice(np.linspace(-np.pi,
-                                             np.pi,
-                                             ms,
-                                             endpoint=False),
-                                 nj,
-                                 replace=False))
-    y = np.sort(np.random.choice(np.linspace(-np.pi,
-                                             np.pi,
-                                             mt,
-                                             endpoint=False),
-                                 nj,
-                                 replace=False))
-    c = np.random.randn(nj)
-    f = np.empty((ms, mt))
-    return x, y, c, f
+from nufft import nufft2d1, nufft2d2, nufft2d3
 
 
 def _error(exact, approx):
@@ -51,92 +11,145 @@ def _error(exact, approx):
 
 
 class NUFFT2DTestCase(unittest.TestCase):
-    """Tests for 2D `nufft.py`."""
+    """Tests for 2D `nufft.py`.
+
+    The purpose of this script is to test the NUFFT library through
+    the python-nufft interface. In addition to the usual interface
+    checks, this seeks to validate the NUFFT implementation for the
+    special case where it corresponds to a DFT.  The script transforms
+    2-dimensional arrays between the space/time and the Fourier domain
+    and compares the output to that of the corresponding FFT
+    implementation from NumPy.
+
+    """
 
     def setUp(self):
-        self.x, self.y, self.c, self.f, self.g = _get_data()
+
+        # Parameters
+        self.N = 32 * np.ones(2, dtype=int)
+        self.eps = 1e-13
+
+        # Coordinates
+        x = [2 * np.pi * np.arange(self.N[0]) / self.N[0],
+             2 * np.pi * np.arange(self.N[1]) / self.N[1]]
+        self.X = np.meshgrid(x[0], x[1])
+
+        self.c = self.X[0] + self.X[1]
+
+        # Frequency points
+        self.st_grid = np.meshgrid(np.arange(self.N[0]),
+                                   np.arange(self.N[1]))
+
+        # Numpy baseline FFT
+        self.f_numpy = np.fft.fft2(self.c)
+        self.c_numpy = np.fft.ifft2(self.f_numpy)
 
     def _type_1_even(self, eps=1e-10):
-        p2 = nufft2d1(self.x,
-                      self.y,
-                      self.c,
-                      len(self.f),
-                      len(self.f),
+
+        p2 = nufft2d1(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      self.c.reshape(-1),
+                      self.N[0],
+                      self.N[1],
                       direct=True)
-        p1 = nufft2d1(self.x,
-                      self.y,
-                      self.c,
-                      len(self.f),
-                      len(self.f),
-                      eps=eps)
+        p1 = nufft2d1(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      self.c.reshape(-1),
+                      self.N[0],
+                      self.N[1],
+                      direct=False)
         self.assertTrue(_error(p1, p2) < eps,
                         "Type 1: Discrepancy between direct and fft function")
 
     def _type_1_odd(self, eps=1e-10):
-        p2 = nufft2d1(self.x,
-                      self.y,
-                      self.c,
-                      len(self.f) + 1,
-                      len(self.f) + 1,
+
+        p2 = nufft2d1(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      self.c.reshape(-1),
+                      self.N[0] + 1,
+                      self.N[1] + 1,
                       direct=True)
-        p1 = nufft2d1(self.x,
-                      self.y,
-                      self.c,
-                      len(self.f) + 1,
-                      len(self.f) + 1,
+        p1 = nufft2d1(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      self.c.reshape(-1),
+                      self.N[0] + 1,
+                      self.N[1] + 1,
                       eps=eps)
         self.assertTrue(_error(p1, p2) < eps,
                         "Type 1: Discrepancy between direct and fft function")
 
     def _type_2(self, eps=1e-10):
-        c2 = nufft2d2(self.x, self.y, self.f, direct=True)
-        c1 = nufft2d2(self.x, self.y, self.f, eps=eps)
+        c2 = nufft2d2(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      np.roll(np.roll(self.c,
+                                      -int(self.N[0] / 2),
+                                      0),
+                              -int(self.N[1] / 2),
+                              1),
+                      direct=True)
+        c1 = nufft2d2(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      np.roll(np.roll(self.c,
+                                      -int(self.N[0] / 2),
+                                      0),
+                              -int(self.N[1] / 2),
+                              1),
+                      eps=eps)
         self.assertTrue(_error(c1, c2) < eps,
                         "Type 2: Discrepancy between direct and fft function")
 
     def _type_3(self, eps=1e-10):
-        p2 = nufft2d3(self.x, self.y, self.c, self.f, self.g, direct=True)
-        p1 = nufft2d3(self.x, self.y, self.c, self.f, self.g, eps=eps)
-        self.assertTrue(_error(p1, p2),
+        p2 = nufft2d3(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      self.c.reshape(-1),
+                      self.st_grid[0].reshape(-1),
+                      self.st_grid[1].reshape(-1),
+                      direct=True)
+        p1 = nufft2d3(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      self.c.reshape(-1),
+                      self.st_grid[0].reshape(-1),
+                      self.st_grid[1].reshape(-1),
+                      eps=eps)
+        self.assertTrue(_error(p1, p2) < eps,
                         "Type 3: Discrepancy between direct and fft function")
 
     def _type_1_2_roundtrip(self, eps=1e-10):
-        x, y, c1, f = _get_data_roundtrip()
-        p = nufft2d1(x, y, c1, f.shape[0], f.shape[1], iflag=-1, eps=eps)
-        c2 = len(x) / len(f)**2 * nufft2d2(x, y, p, iflag=1, direct=True)
-        self.assertTrue(_error(c1, c2) < eps,
+        p = nufft2d1(self.X[0].reshape(-1),
+                     self.X[1].reshape(-1),
+                     self.c.reshape(-1),
+                     self.N[0],
+                     self.N[1],
+                     iflag=-1,
+                     eps=eps)
+        c2 = nufft2d2(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      p,
+                      iflag=1,
+                      direct=True)
+        self.assertTrue(_error(self.c.reshape(-1), c2) < eps,
                         "Type 1 and 2: roundtrip error.")
 
     def _type_1_and_3(self, eps=1e-10):
 
-        #f = nufft1d1freqs(len(self.f))
-        f = nufft1d1freqs(self.f.shape[0])
-        p2 = nufft2d3(self.x, self.y, self.c, f, f, eps=eps)
-        print(p2.shape)
-        print(p2[0])
-        print(p2[1])
-        print(p2[2])
-        p1 = nufft2d1(self.x, self.y, self.c, len(
-            self.f), len(self.g), eps=eps)
-        print(p1.shape)
-        print(p1[0, :])
-        print(p1[1, :])
-        print(p1[2, :])
-        self.assertTrue(_error(p1, p2) < eps,
-                        "Type 1 and 3 and not close (even)")
-
-        # f = nufft2d1freqs(len(f) + 1)
-        # p2 = nufft2d3(self.x, self.c, f, eps=eps)
-        # p1 = nufft2d1(self.x, self.c, len(f), eps=eps)
-        # self.assertTrue(_error(p1, p2) < eps,
-        #                 "Type 1 and 3 and not close (odd)")
-
-        # df = 0.5 * (f[1] - f[0])
-        # p1 = nufft2d1(self.x, self.c, len(f), eps=eps, df=df)
-        # f = nufft2d1freqs(len(f), df=df)
-        # p2 = nufft2d3(self.x, self.c, f, eps=eps)
-        # self.assertTrue(_error(p1, p2) < eps,
-        #                 "Type 1 and 3 and not close (even)")
+        p2 = nufft2d3(self.X[0].reshape(-1),
+                      self.X[1].reshape(-1),
+                      self.c.reshape(-1),
+                      self.st_grid[0].reshape(-1),
+                      self.st_grid[1].reshape(-1),
+                      eps=eps)
+        p1 = np.roll(np.roll(nufft2d1(self.X[0].reshape(-1),
+                                      self.X[1].reshape(-1),
+                                      self.c.reshape(-1),
+                                      self.N[0],
+                                      self.N[1],
+                                      eps=eps),
+                             -int(self.N[0] / 2),
+                             0),
+                     -int(self.N[1] / 2),
+                     1)
+        self.assertTrue(_error(p1.reshape(-1), p2) < eps,
+                        "Type 1 and 3 and not close")
 
     def test_type_1_even(self):
         """Is the 2D type 1 with even data correct?"""
@@ -150,7 +163,7 @@ class NUFFT2DTestCase(unittest.TestCase):
 
     def test_type_2(self):
         """Is the 2D type 2 correct?"""
-        for eps in [1e-2, 1e-5, 1e-10, 1e-12]:
+        for eps in [1e-6, 1e-10, 1e-12]:
             self._type_2(eps)
 
     def test_type_3(self):
@@ -166,8 +179,163 @@ class NUFFT2DTestCase(unittest.TestCase):
     def test_1_and_3(self):
         """Are the 2D type 1 and 3 similar?"""
         for eps in [1e-2, 1e-5, 1e-10, 1e-12]:
-            eps = 1e-12
             self._type_1_and_3(eps)
+
+    def test_type1_dft(self):
+        """Is the NUFFT type 1 DFT correct?"""
+        f_dir1 = np.roll(np.roll(nufft2d1(self.X[0].reshape(-1),
+                                          self.X[1].reshape(-1),
+                                          self.c.reshape(-1),
+                                          self.N[0],
+                                          self.N[1],
+                                          iflag=-1,
+                                          direct=True),
+                                 -int(self.N[0] / 2),
+                                 0),
+                         -int(self.N[1] / 2),
+                         1) * self.N.prod()
+        f_nufft1 = np.roll(np.roll(nufft2d1(self.X[0].reshape(-1),
+                                            self.X[1].reshape(-1),
+                                            self.c.reshape(-1),
+                                            self.N[0],
+                                            self.N[1],
+                                            iflag=-1,
+                                            direct=False),
+                                   -int(self.N[0] / 2),
+                                   0),
+                           -int(self.N[1] / 2),
+                           1) * self.N.prod()
+
+        self.assertTrue(_error(self.f_numpy.reshape(-1), f_dir1.reshape(-1)) < self.eps,
+                        "NUFFT direct DFT (1) vs. NumPy IFFT: error too large")
+        self.assertTrue(_error(self.f_numpy.reshape(-1), f_nufft1.reshape(-1)) < self.eps,
+                        "NUFFT direct DFT (1) vs. NumPy IFFT: error too large")
+
+    def test_type1_idft(self):
+        """Is the NUFFT type 1 IDFT correct?"""
+        c_dir = np.roll(np.roll(nufft2d1(self.X[0].reshape(-1),
+                                         self.X[1].reshape(-1),
+                                         self.f_numpy.reshape(-1),
+                                         self.N[0],
+                                         self.N[1],
+                                         iflag=1,
+                                         direct=True),
+                                -int(self.N[0] / 2),
+                                0),
+                        -int(self.N[1] / 2),
+                        1)
+        c_nufft = np.roll(np.roll(nufft2d1(self.X[0].reshape(-1),
+                                           self.X[1].reshape(-1),
+                                           self.f_numpy.reshape(-1),
+                                           self.N[0],
+                                           self.N[1],
+                                           iflag=1,
+                                           direct=False),
+                                  -int(self.N[0] / 2),
+                                  0),
+                          -int(self.N[1] / 2),
+                          1)
+
+        self.assertTrue(_error(self.c_numpy.reshape(-1), c_dir.reshape(-1)) < self.eps,
+                        "NUFFT direct IDFT (1) vs. NumPy IFFT: error too large")
+        self.assertTrue(_error(self.c_numpy.reshape(-1), c_nufft.reshape(-1)) < self.eps,
+                        "NUFFT direct IDFT (1) vs. NumPy IFFT: error too large")
+
+    def test_type2_dft(self):
+        """Is the NUFFT type 2 DFT correct?"""
+        f_dir2 = nufft2d2(self.X[0].reshape(-1),
+                          self.X[1].reshape(-1),
+                          np.roll(np.roll(self.c,
+                                          -int(self.N[0] / 2),
+                                          0),
+                                  -int(self.N[1] / 2),
+                                  1),
+                          iflag=-1,
+                          direct=True)
+        f_nufft2 = nufft2d2(self.X[0].reshape(-1),
+                            self.X[1].reshape(-1),
+                            np.roll(np.roll(self.c,
+                                            -int(self.N[0] / 2),
+                                            0),
+                                    -int(self.N[1] / 2),
+                                    1),
+                            iflag=-1,
+                            direct=False)
+
+        self.assertTrue(_error(self.f_numpy.reshape(-1), f_dir2) < self.eps,
+                        "NUFFT direct DFT (2) vs. NumPy FFT: error too large")
+        self.assertTrue(_error(self.f_numpy.reshape(-1), f_nufft2) < self.eps,
+                        "NUFFT FFT (2) vs. NumPy FFT: error too large")
+
+    def test_type2_idft(self):
+        """Is the NUFFT type 2 IDFT correct?"""
+        c_dir2 = nufft2d2(self.X[0].reshape(-1),
+                          self.X[1].reshape(-1),
+                          np.roll(np.roll(self.f_numpy,
+                                          -int(self.N[0] / 2),
+                                          0),
+                                  -int(self.N[1] / 2),
+                                  1),
+                          iflag=1,
+                          direct=True) / self.N.prod()
+        c_nufft2 = nufft2d2(self.X[0].reshape(-1),
+                            self.X[1].reshape(-1),
+                            np.roll(np.roll(self.f_numpy,
+                                            -int(self.N[0] / 2),
+                                            0),
+                                    -int(self.N[1] / 2),
+                                    1),
+                            iflag=1,
+                            direct=False) / self.N.prod()
+
+        self.assertTrue(_error(self.c_numpy.reshape(-1), c_dir2) < self.eps,
+                        "NUFFT direct IDFT (2) vs. NumPy IFFT: error too large")
+        self.assertTrue(_error(self.c_numpy.reshape(-1), c_nufft2) < self.eps,
+                        "NUFFT IFFT (2) vs. NumPy IFFT: error too large")
+
+    def test_type3_dft(self):
+        """Is the NUFFT type 3 DFT correct?"""
+        f_dir3 = nufft2d3(self.X[0].reshape(-1),
+                          self.X[1].reshape(-1),
+                          self.c.reshape(-1),
+                          self.st_grid[0].reshape(-1),
+                          self.st_grid[1].reshape(-1),
+                          iflag=-1,
+                          direct=True) * self.N.prod()
+        f_nufft3 = nufft2d3(self.X[0].reshape(-1),
+                            self.X[1].reshape(-1),
+                            self.c.reshape(-1),
+                            self.st_grid[0].reshape(-1),
+                            self.st_grid[1].reshape(-1),
+                            iflag=-1,
+                            direct=False) * self.N.prod()
+
+        self.assertTrue(_error(self.f_numpy.reshape(-1), f_dir3) < self.eps,
+                        "NUFFT direct DFT (3) vs. NumPy FFT: error too large")
+        self.assertTrue(_error(self.f_numpy.reshape(-1), f_nufft3) < self.eps,
+                        "NUFFT FFT (3) vs. NumPy FFT: error too large")
+
+    def test_type3_idft(self):
+        """Is the NUFFT type 3 IDFT correct?"""
+        c_dir3 = nufft2d3(self.X[0].reshape(-1),
+                          self.X[1].reshape(-1),
+                          self.f_numpy.reshape(-1),
+                          self.st_grid[0].reshape(-1),
+                          self.st_grid[1].reshape(-1),
+                          iflag=1,
+                          direct=True)
+        c_nufft3 = nufft2d3(self.X[0].reshape(-1),
+                            self.X[1].reshape(-1),
+                            self.f_numpy.reshape(-1),
+                            self.st_grid[0].reshape(-1),
+                            self.st_grid[1].reshape(-1),
+                            iflag=1,
+                            direct=False)
+
+        self.assertTrue(_error(self.c_numpy.reshape(-1), c_dir3) < self.eps,
+                        "NUFFT direct IDFT (2) vs. NumPy IFFT: error too large")
+        self.assertTrue(_error(self.c_numpy.reshape(-1), c_nufft3) < self.eps,
+                        "NUFFT IFFT (2) error vs. NumPy IFFT: error too large")
 
 
 if __name__ == '__main__':
