@@ -5,7 +5,11 @@ Python-NUFFT
     :target: https://travis-ci.org/marchdf/python-nufft
 
 .. image:: https://coveralls.io/repos/github/marchdf/python-nufft/badge.svg?branch=master
-	   :target: https://coveralls.io/github/marchdf/python-nufft?branch=master
+           :target: https://coveralls.io/github/marchdf/python-nufft?branch=master
+
+.. image:: https://readthedocs.org/projects/python-nufft/badge/?version=latest
+	   :target: http://python-nufft.readthedocs.io/en/latest/?badge=latest
+	   :alt: Documentation Status
 
 Python bindings to a subset of the `NUFFT algorithm
 <http://www.cims.nyu.edu/cmcl/nufft/nufft.html>`_. 1D, 2D, and 3D
@@ -14,18 +18,21 @@ cases are implemented.
 Usage
 -----
 
-To install, run ``python setup.py install``. Then, to evaluate a type-3 FT,
-use ``nufft.nufft3``. Assuming that you have a time series in ``t`` and ``y``
-and you want to evaluate it at (angular) frequencies ``f``:
+The documentation can be found on `ReadTheDocs
+<https://python-nufft.readthedocs.io/en/latest/>`_.
+
+To install, run ``python setup.py install``. Then, to evaluate a
+type-3 FT in 1D, use ``nufft.nufft1d3``. Assuming that you have a time
+series in ``t`` and ``y`` and you want to evaluate it at (angular)
+frequencies ``f``:
 
 .. code-block:: python
 
     import nufft
-    ft = nufft.nufft3(t, y, f)
+    ft = nufft.nufft1d3(t, y, f)
 
-You can specify your required precision using ``eps=1e-15``. The default is
-``1e-15``.
-
+You can specify your required precision using ``eps=1e-15``. The
+default is ``1e-15``.
 
 Authors and License
 -------------------

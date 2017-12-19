@@ -12,19 +12,20 @@ __all__ = ["nufft1d1freqs",
            "nufft3d1",
            "nufft3d2",
            "nufft3d3"]
-
+import os
 import numpy as np
-from ._nufft import (
-    dirft1d1, nufft1d1f90,
-    dirft1d2, nufft1d2f90,
-    dirft1d3, nufft1d3f90,
-    dirft2d1, nufft2d1f90,
-    dirft2d2, nufft2d2f90,
-    dirft2d3, nufft2d3f90,
-    dirft3d1, nufft3d1f90,
-    dirft3d2, nufft3d2f90,
-    dirft3d3, nufft3d3f90,
-)
+if not os.environ.get('READTHEDOCS', None) == 'True':
+    from ._nufft import (
+        dirft1d1, nufft1d1f90,
+        dirft1d2, nufft1d2f90,
+        dirft1d3, nufft1d3f90,
+        dirft2d1, nufft2d1f90,
+        dirft2d2, nufft2d2f90,
+        dirft2d3, nufft2d3f90,
+        dirft3d1, nufft3d1f90,
+        dirft3d2, nufft3d2f90,
+        dirft3d3, nufft3d3f90,
+    )
 
 
 def nufft1d1freqs(ms, df=1.0):

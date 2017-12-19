@@ -27,17 +27,19 @@ if "tag" in sys.argv:
     sys.exit()
 
 # Set up the compiled extension.
-sources = list(map(os.path.join("src", "nufft", "{0}").format,
-                   ["dfftpack.f",
-                    "dirft1d.f",
-                    "dirft2d.f",
-                    "dirft3d.f",
-                    "next235.f",
-                    "nufft1df90.f",
-                    "nufft2df90.f",
-                    "nufft3df90.f"]))
-sources += [os.path.join("nufft", "nufft.pyf")]
-extensions = [Extension("nufft._nufft", sources=sources)]
+extensions = []
+if not os.environ.get('READTHEDOCS', None) == 'True':
+    sources = list(map(os.path.join("src", "nufft", "{0}").format,
+                       ["dfftpack.f",
+                        "dirft1d.f",
+                        "dirft2d.f",
+                        "dirft3d.f",
+                        "next235.f",
+                        "nufft1df90.f",
+                        "nufft2df90.f",
+                        "nufft3df90.f"]))
+    sources += [os.path.join("nufft", "nufft.pyf")]
+    extensions = [Extension("nufft._nufft", sources=sources)]
 
 setup(
     name="nufft",
