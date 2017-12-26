@@ -50,7 +50,6 @@ setup(
     license="MIT",
     packages=["nufft"],
     install_requires=[
-        'f2py',
         'numpy',
         'sphinx_rtd_theme'
     ],
