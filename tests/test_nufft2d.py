@@ -32,15 +32,18 @@ class NUFFT2DTestCase(unittest.TestCase):
         # Coordinates
         x = [2 * np.pi * np.arange(self.N[0]) / self.N[0],
              2 * np.pi * np.arange(self.N[1]) / self.N[1]]
-        self.X = np.meshgrid(x[0], x[1])
+        self.X = np.meshgrid(x[0], x[1], indexing='ij')
 
-        self.c = self.X[0] + self.X[1]
+        self.c = self.X[0] + 2 * self.X[1]
 
         # Frequency points
         self.st_grid = np.meshgrid(np.arange(self.N[0]),
-                                   np.arange(self.N[1]))
+                                   np.arange(self.N[1]),
+                                   indexing='ij')
 
         # Numpy baseline FFT
+        self.kx = (np.fft.fftfreq(self.N[0]) * self.N[0]).astype(int)
+        self.ky = (np.fft.fftfreq(self.N[1]) * self.N[1]).astype(int)
         self.f_numpy = np.fft.fft2(self.c)
         self.c_numpy = np.fft.ifft2(self.f_numpy)
         self.fr_numpy = np.fft.rfft2(self.c)
@@ -277,8 +280,11 @@ class NUFFT2DTestCase(unittest.TestCase):
         """Is the NUFFT type 1 IRDFT correct?"""
 
         # Trick to make it think it is seeing a full FFT
+        K = np.meshgrid(-self.kx,
+                        -self.ky[int(self.N[1] / 2) + 1:],
+                        indexing='ij')
         f = np.concatenate((self.fr_numpy,
-                            np.conj(self.fr_numpy[:, -2:0:-1])),
+                            np.conj(self.fr_numpy[K[0], K[1]])),
                            axis=1)
 
         c_dir = np.roll(np.roll(nufft2d1(self.X[0].reshape(-1),
