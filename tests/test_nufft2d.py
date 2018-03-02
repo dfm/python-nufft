@@ -7,7 +7,8 @@ from nufft import nufft2d1, nufft2d2, nufft2d3
 
 
 def _error(exact, approx):
-    return np.sqrt(np.sum(np.abs(exact - approx) ** 2) / np.sum(np.abs(exact)**2))
+    return np.sqrt(np.sum(np.abs(exact - approx) ** 2) /
+                   np.sum(np.abs(exact)**2))
 
 
 class NUFFT2DTestCase(unittest.TestCase):
@@ -211,9 +212,11 @@ class NUFFT2DTestCase(unittest.TestCase):
                            -int(self.N[1] / 2),
                            1) * self.N.prod()
 
-        self.assertTrue(_error(self.f_numpy.reshape(-1), f_dir1.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.f_numpy.reshape(-1),
+                               f_dir1.reshape(-1)) < self.eps,
                         "NUFFT direct DFT (1) vs. NumPy FFT: error too large")
-        self.assertTrue(_error(self.f_numpy.reshape(-1), f_nufft1.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.f_numpy.reshape(-1),
+                               f_nufft1.reshape(-1)) < self.eps,
                         "NUFFT FFT (1) vs. NumPy FFT: error too large")
 
     def test_type1_idft(self):
@@ -241,9 +244,11 @@ class NUFFT2DTestCase(unittest.TestCase):
                           -int(self.N[1] / 2),
                           1)
 
-        self.assertTrue(_error(self.c_numpy.reshape(-1), c_dir.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.c_numpy.reshape(-1),
+                               c_dir.reshape(-1)) < self.eps,
                         "NUFFT direct IDFT (1) vs. NumPy IFFT: error too large")
-        self.assertTrue(_error(self.c_numpy.reshape(-1), c_nufft.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.c_numpy.reshape(-1),
+                               c_nufft.reshape(-1)) < self.eps,
                         "NUFFT IFFT (1) vs. NumPy IFFT: error too large")
 
     def test_type1_rdft(self):
@@ -271,9 +276,11 @@ class NUFFT2DTestCase(unittest.TestCase):
                            -int(self.N[1] / 2),
                            1)[:, :int(self.N[1] / 2) + 1] * self.N.prod()
 
-        self.assertTrue(_error(self.fr_numpy.reshape(-1), f_dir1.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.fr_numpy.reshape(-1),
+                               f_dir1.reshape(-1)) < self.eps,
                         "NUFFT direct RDFT (1) vs. NumPy RFFT: error too large")
-        self.assertTrue(_error(self.fr_numpy.reshape(-1), f_nufft1.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.fr_numpy.reshape(-1),
+                               f_nufft1.reshape(-1)) < self.eps,
                         "NUFFT RFFT (1) vs. NumPy RFFT: error too large")
 
     def test_type1_irdft(self):
@@ -310,9 +317,11 @@ class NUFFT2DTestCase(unittest.TestCase):
                           -int(self.N[1] / 2),
                           1)
 
-        self.assertTrue(_error(self.cr_numpy.reshape(-1), c_dir.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.cr_numpy.reshape(-1),
+                               c_dir.reshape(-1)) < self.eps,
                         "NUFFT direct IRDFT (1) vs. NumPy IRFFT: error too large")
-        self.assertTrue(_error(self.cr_numpy.reshape(-1), c_nufft.reshape(-1)) < self.eps,
+        self.assertTrue(_error(self.cr_numpy.reshape(-1),
+                               c_nufft.reshape(-1)) < self.eps,
                         "NUFFT IRFFT (1) vs. NumPy IRFFT: error too large")
 
     def test_type2_dft(self):

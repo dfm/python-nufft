@@ -3,5 +3,5 @@ Developer Manual
 .. toctree::
    :maxdepth: 2
 
-   Testing Nalu <testing.rst>
+   Testing <testing.rst>
    Source Code Documentation <code.rst>
