@@ -1,11 +1,11 @@
 Python-NUFFT
 ============
 
-.. image:: https://travis-ci.org/marchdf/python-nufft.svg?branch=master
-    :target: https://travis-ci.org/marchdf/python-nufft
+.. image:: https://travis-ci.org/ThomasA/python-nufft.svg?branch=master
+    :target: https://travis-ci.org/ThomasA/python-nufft
 
-.. image:: https://coveralls.io/repos/github/marchdf/python-nufft/badge.svg?branch=master
-           :target: https://coveralls.io/github/marchdf/python-nufft?branch=master
+.. image:: https://coveralls.io/repos/github/ThomasA/python-nufft/badge.svg?branch=master
+           :target: https://coveralls.io/github/ThomasA/python-nufft?branch=master
 
 .. image:: https://readthedocs.org/projects/python-nufft/badge/?version=latest
 	   :target: http://python-nufft.readthedocs.io/en/latest/?badge=latest
