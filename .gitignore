@@ -1,4 +1,7 @@
 build
+_build
 *.pyc
 *.so
 nufft/_*.c
+*.DS_Store
+_nufft.cpython*

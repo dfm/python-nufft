@@ -27,11 +27,19 @@ if "tag" in sys.argv:
     sys.exit()
 
 # Set up the compiled extension.
-sources = list(map(os.path.join("src", "nufft1d", "{0}").format,
-                   ["dfftpack.f", "dirft1d.f", "dirft2d.f",
-                    "next235.f", "nufft1df90.f", "nufft2df90.f"]))
-sources += [os.path.join("nufft", "nufft1d.pyf")]
-extensions = [Extension("nufft._nufft", sources=sources)]
+extensions = []
+if not os.environ.get('READTHEDOCS', None) == 'True':
+    sources = list(map(os.path.join("src", "nufft", "{0}").format,
+                       ["dfftpack.f",
+                        "dirft1d.f",
+                        "dirft2d.f",
+                        "dirft3d.f",
+                        "next235.f",
+                        "nufft1df90.f",
+                        "nufft2df90.f",
+                        "nufft3df90.f"]))
+    sources += [os.path.join("nufft", "nufft.pyf")]
+    extensions = [Extension("nufft._nufft", sources=sources)]
 
 setup(
     name="nufft",
@@ -41,10 +49,19 @@ setup(
     url="https://github.com/dfm/python-nufft",
     license="MIT",
     packages=["nufft"],
+    install_requires=[
+        'numpy',
+        'sphinx_rtd_theme'
+    ],
     ext_modules=extensions,
     description="non-uniform FFTs",
     long_description=open("README.rst").read(),
     package_data={"": ["README.rst", "LICENSE"]},
+    test_suite='tests',
+    tests_require=[
+        'nose',
+        'unittest2'
+    ],
     include_package_data=True,
     classifiers=[
         # "Development Status :: 5 - Production/Stable",
