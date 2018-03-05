@@ -1,0 +1,17 @@
+[run]
+omit =
+    */python?.?/*
+    */lib-python/?.?/*.py
+    */lib_pypy/_*.py
+    */site-packages/ordereddict.py
+    */site-packages/nose/*
+    */unittest2/*
+    test*.py
+
+[report]
+exclude_lines =
+    raise NotImplementedError
+    raise ValueError
+    raise RuntimeError
+    if __name__ == .__main__.:
+    
